@@ -12,29 +12,29 @@ The following instructions describe installing BSV Blockchain SV Node using tool
 
 To start the install of SV Node, make sure you use an account that can use `su` or `sudo` to install software into directories owned by the root user.
 
-Download the zipped release of your choosing, for this example we are using 1.2.2 which is the latest release at the time of writing:
+Download the zipped release of your choosing, for this example we are using 1.2.3 which is the latest release at the time of writing:
 
-<pre class="language-sh"><code class="lang-sh"><strong>wget https://releases-svnode.bsvblockchain.org/svnode-1.2.2/bitcoin-sv-1.2.2-x86_64-linux-gnu.tar.gz
+<pre class="language-sh"><code class="lang-sh"><strong>wget https://releases-svnode.bsvblockchain.org/svnode-1.2.3/bitcoin-sv-1.2.3-x86_64-linux-gnu.tar.gz
 </strong></code></pre>
 
 Confirm downloaded file sha hash matches those provided at [download.bitcoinsv.io](https://download.bitcoinsv.io/bitcoinsv/) for the version you have downloaded.
 
 ```sh
-sha256sum bitcoin-sv-1.2.2-x86_64-linux-gnu.tar.gz
+sha256sum bitcoin-sv-1.2.3-x86_64-linux-gnu.tar.gz
 # Expected Output 
-# d8b181c89fb6b76ff74487472d29d9d4ada6d2f186d89d84d33d9861d681e073  bitcoin-sv-1.2.2-x86_64-linux-gnu.tar.gz
+# 13f222f5b466fe4af2bb867628354e4ae9711a10019e89fc7bf018b90e30b3c8  bitcoin-sv-1.2.3-x86_64-linux-gnu.tar.gz
 ```
 
 Locate the file you downloaded and extract it using the `tar` command followed by the argument `xzf` followed by the file name. The argument `xzf` means eXtract the gZipped tar archive file. For example, for a 64-bit tar archive in your current directory, the command is:
 
 ```bash
-tar xvf bitcoin-sv-1.2.2-x86_64-linux-gnu.tar.gz
+tar xvf bitcoin-sv-1.2.3-x86_64-linux-gnu.tar.gz
 ```
 
-Create a symbolic link from a new directory called `bitcoin` to the `bitcoin-sv-1.2.1` directory you just made by unzipping for easier use and updates:
+Create a symbolic link from a new directory called `bitcoin` to the `bitcoin-sv-1.2.3` directory you just made by unzipping for easier use and updates:
 
 ```bash
-ln -s bitcoin-sv-1.2.2 bitcoin
+ln -s bitcoin-sv-1.2.3 bitcoin
 ```
 
 Create a `bitcoin-data` directory to put bitcoin data in (or else Bitcoin will put data in `~/.bitcoin` by default):
