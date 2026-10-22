@@ -1,12 +1,12 @@
 ---
 description: >-
-  Run your own Arcade instance in about ten minutes, from source or from the
+  Run your own BSV Broadcaster instance in about ten minutes, from source or from the
   container image, on mainnet, testnet, teratestnet, or regtest.
 ---
 
-# Run Your Own Arcade
+# Run Your Own BSV Broadcaster
 
-Arcade is open source under the Open BSV licence and is designed to be run by anyone. A single binary with an embedded key-value store is enough for a working instance; no PostgreSQL, Kafka, or other services are required. Running your own gives you a broadcaster that is entirely under your control, which is the right choice for any production application and a sensible one for serious development.
+BSV Broadcaster is open source under the Open BSV licence and is designed to be run by anyone. A single binary with an embedded key-value store is enough for a working instance; no PostgreSQL, Kafka, or other services are required. Running your own gives you a broadcaster that is entirely under your control, which is the right choice for any production application and a sensible one for serious development.
 
 {% embed url="https://github.com/bsv-blockchain/arcade" %}
 
@@ -53,7 +53,7 @@ Set `storage_path` and the Pebble `path` in your configuration to somewhere unde
 
 ## Configure
 
-Save this as `config.yaml`. It runs every Arcade service in one process, uses the embedded store, and discovers Teranode peers automatically.
+Save this as `config.yaml`. It runs every BSV Broadcaster service in one process, uses the embedded store, and discovers Teranode peers automatically.
 
 ```yaml
 mode: all                      # run every service in one process
@@ -108,14 +108,14 @@ For regtest, peer discovery cannot use public bootstrap peers, so set `p2p.boots
 
 ## Enable status tracking
 
-This is the step most often missed. Arcade delegates proof construction to a separate **Merkle Service**, which watches the network for the transactions your instance has registered and calls back into your instance as they are seen, mined, and buried. The three keys at the bottom of the configuration above wire that up:
+This is the step most often missed. BSV Broadcaster delegates proof construction to a separate **Merkle Service**, which watches the network for the transactions your instance has registered and calls back into your instance as they are seen, mined, and buried. The three keys at the bottom of the configuration above wire that up:
 
 - `merkle_service.url` is the Merkle Service for your network. The BSV Association hosts public instances, listed in the table above.
 - `callback_url` is the address at which **the Merkle Service can reach your instance**, with the path `/api/v1/merkle-service/callback`. It must be routable from the Merkle Service, which means a public hostname or a tunnel for a laptop. For a local setup with Merkle Service in Docker on the same host, `http://host.docker.internal:8080/api/v1/merkle-service/callback` works.
-- `callback_token` authenticates those inbound callbacks. Generate it with `openssl rand -hex 32`. Arcade refuses to start if `merkle_service.url` is set without a token, because an unauthenticated callback endpoint would accept forged status updates.
+- `callback_token` authenticates those inbound callbacks. Generate it with `openssl rand -hex 32`. BSV Broadcaster refuses to start if `merkle_service.url` is set without a token, because an unauthenticated callback endpoint would accept forged status updates.
 
 {% hint style="warning" %}
-Without a Merkle Service, Arcade still validates and broadcasts, but every transaction stays at `RECEIVED` forever and no merkle paths are ever produced.
+Without a Merkle Service, BSV Broadcaster still validates and broadcasts, but every transaction stays at `RECEIVED` forever and no merkle paths are ever produced.
 {% endhint %}
 
 ## Run and verify
@@ -144,12 +144,12 @@ With the Merkle Service configured, the status should reach `SEEN_ON_NETWORK` wi
 
 ## Point your application at it
 
-Every example on the [Arcade page](arcade.md#using-arcade-from-the-sdks) and the [Quickstart](quickstart.md) works unchanged against your own instance; replace the public URL with `http://localhost:8080` or wherever you expose it.
+Every example on the [BSV Broadcaster page](bsv-broadcaster.md#using-bsv-broadcaster-from-the-sdks) and the [Quickstart](quickstart.md) works unchanged against your own instance; replace the public URL with `http://localhost:8080` or wherever you expose it.
 
 ## Going to production
 
 - **Separate the services.** `mode: all` is ideal for one machine. For resilience, run `api-server`, `propagation`, `webhook`, `sse`, `bump-builder`, `p2p-client`, and `chaintracks` as separate processes with `--mode <name>`, backed by an external Kafka cluster and an Aerospike, PostgreSQL, or MongoDB store. Start from `config.example.yaml` in the repository and the Kubernetes manifests under `deploy/`.
-- **Pre-create Kafka topics** when using external Kafka. Arcade does not create them, and the propagation topic has a fixed partition-count requirement described in `docs/production-kafka.md`.
+- **Pre-create Kafka topics** when using external Kafka. BSV Broadcaster does not create them, and the propagation topic has a fixed partition-count requirement described in `docs/production-kafka.md`.
 - **Run more than one instance** if you need throughput or regional presence. Status records are per instance, so route status lookups to the instance that received the submission, or have the instances share a store.
 - **Watch the SSE port.** The SSE service listens separately from the API, on port 8082 by default. Expose it if clients will use `/events`.
 - **Monitor it.** `/metrics` exposes Prometheus metrics, and `/ready` and `/health` are suitable Kubernetes probes. The `blockHeight` in the health response lets you detect an instance whose chain view is lagging.

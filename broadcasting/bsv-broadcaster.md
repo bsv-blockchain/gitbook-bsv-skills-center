@@ -4,16 +4,20 @@ description: >-
   endpoints, API reference, SDK integration, and self-hosting.
 ---
 
-# Arcade
+# BSV Broadcaster
 
-[Arcade](https://github.com/bsv-blockchain/arcade) is the BSV Association's transaction broadcast service. It accepts a signed transaction over HTTP, validates it against network policy, delivers it to Teranode, and then follows it through the network until it is mined, reporting each status change by webhook or server-sent events and handing back the merkle path once the transaction is in a block.
+[BSV Broadcaster](https://github.com/bsv-blockchain/arcade) is the BSV Association's transaction broadcast service. It accepts a signed transaction over HTTP, validates it against network policy, delivers it to Teranode, and then follows it through the network until it is mined, reporting each status change by webhook or server-sent events and handing back the merkle path once the transaction is in a block.
 
-Arcade is the successor to [ARC and mAPI](legacy-arc-mapi.md). Its HTTP API keeps ARC's request and response shapes wherever practical, so most ARC clients can be repointed with a URL change. Unlike ARC, it is built for Teranode only and runs as a single binary with no external database.
+BSV Broadcaster is the successor to [ARC and mAPI](legacy-arc-mapi.md). Its HTTP API keeps ARC's request and response shapes wherever practical, so most ARC clients can be repointed with a URL change. Unlike ARC, it is built for Teranode only and runs as a single binary with no external database.
+
+{% hint style="info" %}
+BSV Broadcaster was previously called Arcade. The repository, public hostnames, binary, container image, configuration keys, and the Python SDK class still use the name `arcade`, so you will see it in URLs and code throughout these pages.
+{% endhint %}
 
 {% embed url="https://github.com/bsv-blockchain/arcade" %}
 
 {% hint style="success" %}
-**Two ways to use it.** Point your application at one of the [public endpoints](#public-endpoints) below and start broadcasting immediately, or [run your own instance](run-your-own-arcade.md) for private callbacks, your own limits, and no third-party dependency. The API is identical either way. New here? Start with the [Quickstart](quickstart.md).
+**Two ways to use it.** Point your application at one of the [public endpoints](#public-endpoints) below and start broadcasting immediately, or [run your own instance](run-your-own-bsv-broadcaster.md) for private callbacks, your own limits, and no third-party dependency. The API is identical either way. New here? Start with the [Quickstart](quickstart.md).
 {% endhint %}
 
 ## Public endpoints
@@ -30,7 +34,7 @@ The following instances are open to anyone, on mainnet, with no API key.
 Each instance publishes its own fee and size limits at `GET /policy`. They differ by operator, so read the policy from the instance you intend to use rather than assuming one value across the network. Every instance also serves interactive API documentation at its root URL and a liveness report at `/health` that lists the Teranode endpoints it is connected to.
 
 {% hint style="info" %}
-The public endpoints are shared infrastructure, suitable for development and for production applications with ordinary volume. If you need guaranteed throughput, private callback handling, or simply no dependency on someone else's service, [run your own instance](run-your-own-arcade.md). It takes about ten minutes.
+The public endpoints are shared infrastructure, suitable for development and for production applications with ordinary volume. If you need guaranteed throughput, private callback handling, or simply no dependency on someone else's service, [run your own instance](run-your-own-bsv-broadcaster.md). It takes about ten minutes.
 {% endhint %}
 
 ## Quick start
@@ -78,13 +82,13 @@ Pick the body encoding that suits your client. Bodies are capped at 32 MiB.
 | `application/octet-stream` | Raw transaction bytes. Most efficient. |
 | `application/json` | `{ "rawTx": "<hex>" }`. The ARC-compatible form. |
 
-Raw and [Extended Format](https://bsv.brc.dev/transactions/0030) are both accepted. BEEF is not; convert it to EF before submitting. Arcade runs policy, fee, and script validation synchronously before answering, so EF is preferred because it lets the validator check fees and scripts without looking up the parent outputs.
+Raw and [Extended Format](https://bsv.brc.dev/transactions/0030) are both accepted. BEEF is not; convert it to EF before submitting. BSV Broadcaster runs policy, fee, and script validation synchronously before answering, so EF is preferred because it lets the validator check fees and scripts without looking up the parent outputs.
 
 Optional headers:
 
 | Header | Effect |
 | --- | --- |
-| `X-CallbackUrl` | Arcade POSTs status updates to this URL as the transaction progresses. |
+| `X-CallbackUrl` | BSV Broadcaster POSTs status updates to this URL as the transaction progresses. |
 | `X-CallbackToken` | Opaque token of your choosing. Sent back on every webhook and used to filter the SSE stream. |
 | `X-FullStatusUpdates` | `true` to receive every intermediate status, not only the final ones. |
 | `X-SkipFeeValidation`, `X-SkipScriptValidation` | Bypass the corresponding local check. Honoured only where the operator allows it. |
@@ -93,9 +97,9 @@ Responses:
 
 | Status | Meaning |
 | --- | --- |
-| `202` | Accepted for processing. Body is `{ txid, status: 202, txStatus }`. Resubmitting a transaction Arcade has already seen also returns 202, with `txStatus` reflecting its current state, which may already be `MINED`, `REJECTED`, or `DOUBLE_SPEND_ATTEMPTED`. |
+| `202` | Accepted for processing. Body is `{ txid, status: 202, txStatus }`. Resubmitting a transaction BSV Broadcaster has already seen also returns 202, with `txStatus` reflecting its current state, which may already be `MINED`, `REJECTED`, or `DOUBLE_SPEND_ATTEMPTED`. |
 | `400` | The transaction failed to decode or failed validation. The body is `{ error, reason, txid, status, title, detail, type }`, where `status` is the ARC error code (461 malformed scripts, 465 fee too low, 476 not final, and so on). This is terminal: the transaction is invalid as submitted, and sending it elsewhere will not help. The one exception is 476, a locktime that has not yet passed, which you may resubmit later. |
-| `503` | Arcade is under backpressure. Nothing was queued. Retry after a short delay. |
+| `503` | BSV Broadcaster is under backpressure. Nothing was queued. Retry after a short delay. |
 
 ### `POST /txs` — submit a batch
 
@@ -150,11 +154,11 @@ event: status
 data: {"txid":"9f2b…","txStatus":"MINED","timestamp":"2026-10-16T12:01:00.987Z","blockHash":"0000…","blockHeight":971333,"merklePath":"<BUMP hex>"}
 ```
 
-A `: keepalive` comment arrives every 15 seconds. If the connection drops, reconnect with the `Last-Event-ID` header set to the last `id` you saw and Arcade replays everything you missed. CORS is open, so a browser can subscribe directly with `EventSource`.
+A `: keepalive` comment arrives every 15 seconds. If the connection drops, reconnect with the `Last-Event-ID` header set to the last `id` you saw and BSV Broadcaster replays everything you missed. CORS is open, so a browser can subscribe directly with `EventSource`.
 
 ### Webhooks
 
-When you submit with `X-CallbackUrl`, Arcade POSTs a JSON body to that URL on each status change:
+When you submit with `X-CallbackUrl`, BSV Broadcaster POSTs a JSON body to that URL on each status change:
 
 ```json
 {
@@ -180,39 +184,39 @@ Requests carry a `User-Agent` beginning `arcade-webhook/` and, if you supplied o
 | `SEEN_MULTIPLE_NODES` | Observed by more than one miner. Informational. |
 | `MINED` | Included in a block. `merklePath` is now available. |
 | `IMMUTABLE` | Deep enough that reorganisation is no longer a practical concern. |
-| `PENDING_RETRY` | Delivery to Teranode failed; Arcade will retry. |
+| `PENDING_RETRY` | Delivery to Teranode failed; BSV Broadcaster will retry. |
 | `STUMP_PROCESSING` | Mined; merkle path is being assembled. |
 | `REJECTED` | Rejected by the network. Terminal. |
-| `DOUBLE_SPEND_ATTEMPTED` | A conflicting transaction was seen. Terminal in Arcade, unlike ARC where it could still resolve. `competingTxs` lists the conflicts. |
+| `DOUBLE_SPEND_ATTEMPTED` | A conflicting transaction was seen. Terminal in BSV Broadcaster, unlike ARC where it could still resolve. `competingTxs` lists the conflicts. |
 | `UNKNOWN` | No verdict yet. |
 
-If a block is orphaned after a `MINED` report, Arcade re-anchors the transaction to the replacement block and emits a new `MINED` event with a fresh merkle path. The superseded anchors are kept under `orphanedProofs` on the status record.
+If a block is orphaned after a `MINED` report, BSV Broadcaster re-anchors the transaction to the replacement block and emits a new `MINED` event with a fresh merkle path. The superseded anchors are kept under `orphanedProofs` on the status record.
 
-## Using Arcade from the SDKs
+## Using BSV Broadcaster from the SDKs
 
 ### TypeScript
 
-The `Teranode` broadcaster in `@bsv/sdk` posts a transaction as Extended Format bytes to whatever URL you give it, which is exactly what Arcade's `/tx` endpoint accepts. Every input must have its `sourceTransaction` set so the SDK can produce EF.
+The `Teranode` broadcaster in `@bsv/sdk` posts a transaction as Extended Format bytes to whatever URL you give it, which is exactly what BSV Broadcaster's `/tx` endpoint accepts. Every input must have its `sourceTransaction` set so the SDK can produce EF.
 
 ```ts
 import { Transaction, Teranode } from '@bsv/sdk'
 
-const arcade = new Teranode('https://arcade-us-1.bsvblockchain.tech/tx')
+const broadcaster = new Teranode('https://arcade-us-1.bsvblockchain.tech/tx')
 
 const tx = Transaction.fromHex(signedTxHex)
-const result = await tx.broadcast(arcade)
+const result = await tx.broadcast(broadcaster)
 // { status: 'success', txid: '…', message: 'broadcast successful' }
 ```
 
-If you need callbacks or a callback token, implement the `Broadcaster` interface directly. The [custom broadcaster example](../guides/sdks/ts/examples/example_building_custom_tx_broadcaster.md) shows the pattern; swap the WhatsOnChain URL for Arcade's `/tx`, send `{ rawTx: tx.toHexEF() }` as JSON, and add the `X-CallbackUrl` and `X-CallbackToken` headers.
+If you need callbacks or a callback token, implement the `Broadcaster` interface directly. The [custom broadcaster example](../guides/sdks/ts/examples/example_building_custom_tx_broadcaster.md) shows the pattern; swap the WhatsOnChain URL for BSV Broadcaster's `/tx`, send `{ rawTx: tx.toHexEF() }` as JSON, and add the `X-CallbackUrl` and `X-CallbackToken` headers.
 
 {% hint style="warning" %}
-The SDK's `ARC` class posts to `{url}/v1/tx`, a path Arcade does not serve. Do not point `ARC` at an Arcade instance. The default broadcaster used by `tx.broadcast()` with no argument is still GorillaPool's ARC; pass an explicit broadcaster to use Arcade.
+The SDK's `ARC` class posts to `{url}/v1/tx`, a path BSV Broadcaster does not serve. Do not point `ARC` at a BSV Broadcaster instance. The default broadcaster used by `tx.broadcast()` with no argument is still GorillaPool's ARC; pass an explicit broadcaster to use BSV Broadcaster.
 {% endhint %}
 
 ### Go
 
-The Go SDK's `Arc` broadcaster posts `{ "rawTx": "<EF or raw hex>" }` to `{ApiUrl}/tx` and accepts any 2xx response, so it works against Arcade unchanged. Give it the instance root as `ApiUrl`.
+The Go SDK's `Arc` broadcaster posts `{ "rawTx": "<EF or raw hex>" }` to `{ApiUrl}/tx` and accepts any 2xx response, so it works against BSV Broadcaster unchanged. Give it the instance root as `ApiUrl`.
 
 ```go
 import (
@@ -222,7 +226,7 @@ import (
 
 tx, _ := transaction.NewTransactionFromHex(signedTxHex)
 
-callbackURL := "https://your.app/arcade-webhook"
+callbackURL := "https://your.app/broadcaster-webhook"
 success, failure := tx.Broadcast(&broadcaster.Arc{
     ApiUrl:      "https://arcade-us-1.bsvblockchain.tech",
     CallbackUrl: &callbackURL,
@@ -233,7 +237,7 @@ if failure != nil {
 // success.Txid
 ```
 
-For ARC itself the same struct expects the versioned base, for example `https://arc.taal.com/v1`. The `WaitFor` and `WaitForStatus` fields are ARC-only and are ignored by Arcade.
+For ARC itself the same struct expects the versioned base, for example `https://arc.taal.com/v1`. The `WaitFor` and `WaitForStatus` fields are ARC-only and are ignored by BSV Broadcaster.
 
 ### Python
 
@@ -242,22 +246,22 @@ The Python SDK ships a dedicated `Arcade` class.
 ```python
 from bsv.broadcasters import Arcade, ArcadeConfig
 
-arcade = Arcade(
+broadcaster = Arcade(
     "https://arcade-us-1.bsvblockchain.tech",
     ArcadeConfig(
-        callback_url="https://your.app/arcade-webhook",
+        callback_url="https://your.app/broadcaster-webhook",
         callback_token="a-token-you-choose",
     ),
 )
 
-result = await tx.broadcast(arcade)        # async
-result = arcade.sync_broadcast(tx)         # sync
+result = await tx.broadcast(broadcaster)        # async
+result = broadcaster.sync_broadcast(tx)         # sync
 
-status = arcade.check_transaction_status(txid)
+status = broadcaster.check_transaction_status(txid)
 ```
 
-It submits EF when every input has its `source_transaction`, falls back to raw hex otherwise, treats a `400` as terminal, and reports `REJECTED` or `DOUBLE_SPEND_ATTEMPTED` on a 202 resubmit as a `BroadcastFailure`. The SDK's own [Arcade guide](https://github.com/bsv-blockchain/py-sdk/blob/master/docs/arcade_broadcasting.md) lists the remaining differences from its `ARC` class.
+It submits EF when every input has its `source_transaction`, falls back to raw hex otherwise, treats a `400` as terminal, and reports `REJECTED` or `DOUBLE_SPEND_ATTEMPTED` on a 202 resubmit as a `BroadcastFailure`. The SDK's own [BSV Broadcaster guide](https://github.com/bsv-blockchain/py-sdk/blob/master/docs/arcade_broadcasting.md) lists the remaining differences from its `ARC` class.
 
 ## Self-hosting
 
-Anyone can run Arcade. A single binary with an embedded store is a complete instance, and the BSV Association hosts the Merkle Service that drives status tracking for any instance on mainnet, testnet, or teratestnet. See [Run Your Own Arcade](run-your-own-arcade.md) for a ten-minute walkthrough covering source and container installs, configuration for each network, enabling status tracking, and production deployment.
+Anyone can run BSV Broadcaster. A single binary with an embedded store is a complete instance, and the BSV Association hosts the Merkle Service that drives status tracking for any instance on mainnet, testnet, or teratestnet. See [Run Your Own BSV Broadcaster](run-your-own-bsv-broadcaster.md) for a ten-minute walkthrough covering source and container installs, configuration for each network, enabling status tracking, and production deployment.

@@ -8,7 +8,7 @@ description: >-
 
 Several BSV block explorers expose an HTTP endpoint that accepts a raw transaction and relays it to the network. They are simple to call, need no account to get started, and are often already part of an application's stack for UTXO and history lookups.
 
-They are not transaction processors. None of them track a transaction's lifecycle for you, deliver merkle paths, or notify you when it is mined; you poll their transaction endpoints for that. Their free tiers are rate-limited at levels suited to prototypes and low-volume applications. For anything beyond that, use [Arcade](arcade.md).
+They are not transaction processors. None of them track a transaction's lifecycle for you, deliver merkle paths, or notify you when it is mined; you poll their transaction endpoints for that. Their free tiers are rate-limited at levels suited to prototypes and low-volume applications. For anything beyond that, use [BSV Broadcaster](bsv-broadcaster.md).
 
 | Service | Mainnet base URL | Testnet base URL | Free limit | API key |
 | --- | --- | --- | --- | --- |
@@ -103,4 +103,4 @@ Anonymous broadcasting is limited to 10 transactions per minute per IP. Keyed ti
 - **Already known is success.** If you resubmit a transaction the explorer's node has seen, you get an error such as "already in the mempool" or "already in block chain". Treat these as confirmation that an earlier attempt worked.
 - **Send parents before children.** These endpoints do not accept ancestor bundles. If a transaction spends an unconfirmed output, broadcast the parent first and wait for a successful response, or use a multi-transaction endpoint and list them in order.
 - **Confirm independently.** A relayed transaction is in one operator's node. Poll the explorer's transaction endpoint, or query a second source, before treating it as seen by the network.
-- **Plan for the limit.** The free tiers are counted per IP. A burst of a few hundred transactions will be throttled on every one of these services. Arcade's public endpoints have no such ceiling.
+- **Plan for the limit.** The free tiers are counted per IP. A burst of a few hundred transactions will be throttled on every one of these services. BSV Broadcaster's public endpoints have no such ceiling.
