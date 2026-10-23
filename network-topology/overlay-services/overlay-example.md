@@ -1,11 +1,15 @@
 ---
-description: Open source implementation of an Overlay Service
+description: Current open source Overlay Service examples and tooling
 ---
 
-# Overlay Example
+# Overlay Examples
 
-{% hint style="danger" %}
-Alpha Release - please be aware these components are subject to change as they are currently undergoing internal review prior to any official release.
+{% hint style="info" %}
+Use the current BSV Blockchain overlay repositories for new development. The older `bitcoin-sv/overlay-example` repository is archived and should be treated as historical reference material only.
 {% endhint %}
 
-{% embed url="https://github.com/bitcoin-sv/overlay-example" %}
+{% embed url="https://github.com/bsv-blockchain/overlay-express-examples" %}
+
+{% embed url="https://github.com/bsv-blockchain/overlay-express" %}
+
+{% embed url="https://github.com/bsv-blockchain/overlay-services" %}
