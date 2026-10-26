@@ -1,0 +1,9 @@
+root: ./
+
+structure:
+  readme: README.md
+  summary: SUMMARY.md
+
+redirects:
+  broadcasting/arcade: broadcasting/bsv-broadcaster.md
+  broadcasting/run-your-own-arcade: broadcasting/run-your-own-bsv-broadcaster.md

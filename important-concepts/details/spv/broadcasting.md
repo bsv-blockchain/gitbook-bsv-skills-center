@@ -5,7 +5,7 @@ description: Transaction Broadcasting from SPV Wallet
 # Broadcasting
 
 {% hint style="info" %}
-This page describes how the SPV Wallet component broadcasts internally. For every way to broadcast a transaction to BSV, including the BSV Association's supported [Arcade](../../../broadcasting/arcade.md) service, see the [Broadcasting](../../../broadcasting/README.md) section.
+This page describes how the SPV Wallet component broadcasts internally. For every way to broadcast a transaction to BSV, including the BSV Association's supported [BSV Broadcaster](../../../broadcasting/bsv-broadcaster.md) service, see the [Broadcasting](../../../broadcasting/README.md) section.
 {% endhint %}
 
 The SPV Wallet broadcasts all valid transactions it receives or creates to ARC.

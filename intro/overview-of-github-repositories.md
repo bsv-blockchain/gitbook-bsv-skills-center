@@ -53,7 +53,7 @@ The main repository is available here: [https://github.com/bitcoin-sv/arc](https
 
 Full details on ARC are not yet available in this BSV Skills Center, but can be found here:[https://bitcoin-sv.github.io/arc/#/](https://bitcoin-sv.github.io/arc/#/)
 
-ARC is superseded by **Arcade**, the BSV Association's supported broadcaster for Teranode: [https://github.com/bsv-blockchain/arcade](https://github.com/bsv-blockchain/arcade). See the [Broadcasting](../broadcasting/README.md) section for public endpoints, the API, and every other way to broadcast a transaction.
+ARC is superseded by **BSV Broadcaster**, the BSV Association's supported broadcaster for Teranode: [https://github.com/bsv-blockchain/broadcaster](https://github.com/bsv-blockchain/broadcaster). See the [Broadcasting](../broadcasting/README.md) section for public endpoints, the API, and every other way to broadcast a transaction.
 
 ## SV Node
 

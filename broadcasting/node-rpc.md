@@ -80,11 +80,11 @@ import { Teranode } from '@bsv/sdk'
 const result = await tx.broadcast(new Teranode('http://<teranode-host>:<propagation-port>/tx'))
 ```
 
-Teranode's propagation endpoint accepts and validates the transaction but does not track it afterwards or produce merkle paths. That is Arcade's job, which is why [Arcade](arcade.md) is the recommended front door to Teranode for applications. Submit directly only if you operate the Teranode yourself and have your own means of following the transaction. The listener address is set by the operator in the Propagation service settings; there is no public Teranode submission endpoint. See the [Teranode documentation](https://bsv-blockchain.github.io/teranode/) for the Propagation service reference.
+Teranode's propagation endpoint accepts and validates the transaction but does not track it afterwards or produce merkle paths. That is BSV Broadcaster's job, which is why [BSV Broadcaster](bsv-broadcaster.md) is the recommended front door to Teranode for applications. Submit directly only if you operate the Teranode yourself and have your own means of following the transaction. The listener address is set by the operator in the Propagation service settings; there is no public Teranode submission endpoint. See the [Teranode documentation](https://bsv-blockchain.github.io/teranode/) for the Propagation service reference.
 
 ## Operating guidance
 
 - **Your node's view is authoritative for you.** When your own node accepts a transaction, you know it passed consensus and policy as that node applies them. When it rejects one, the error tells you exactly why, which is often more useful than a third-party API's response.
-- **Relay is not confirmation.** The transaction is in your mempool and being gossiped. Check for it in a block, or run [Arcade](arcade.md) alongside your node for lifecycle tracking.
+- **Relay is not confirmation.** The transaction is in your mempool and being gossiped. Check for it in a block, or run [BSV Broadcaster](bsv-broadcaster.md) alongside your node for lifecycle tracking.
 - **Keep `txindex` on if you look up transactions later.** Without it, `getrawtransaction` only finds mempool entries and transactions in unpruned blocks.
 - **Protect the RPC port.** Never expose it to the internet without authentication and TLS. The public endpoint exists precisely so that nobody has to.

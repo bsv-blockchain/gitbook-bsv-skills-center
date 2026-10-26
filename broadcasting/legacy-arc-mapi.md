@@ -1,12 +1,12 @@
 ---
 description: >-
-  mAPI is retired and ARC is superseded by Arcade. What still works, who
+  mAPI is retired and ARC is superseded by BSV Broadcaster. What still works, who
   still runs it, and how to migrate.
 ---
 
 # ARC and mAPI (Legacy)
 
-Before Arcade, BSV went through two generations of miner-facing broadcast APIs. Both are still referred to in older code, documentation, and SDK defaults, so it helps to know where they stand.
+Before BSV Broadcaster, BSV went through two generations of miner-facing broadcast APIs. Both are still referred to in older code, documentation, and SDK defaults, so it helps to know where they stand.
 
 ## mAPI
 
@@ -14,9 +14,9 @@ The Merchant API (mAPI) was the original miner-operated endpoint for fee quotes 
 
 ## ARC
 
-[ARC](https://github.com/bsv-blockchain/arc) replaced mAPI as a multi-layer transaction processor that sits in front of a miner's nodes, validates submissions, and tracks each transaction's lifecycle with callbacks. It introduced the status vocabulary (`RECEIVED`, `SEEN_ON_NETWORK`, `MINED`, and so on), the `X-CallbackUrl` mechanism, and the `{ "rawTx" }` request shape that Arcade carries forward.
+[ARC](https://github.com/bsv-blockchain/arc) replaced mAPI as a multi-layer transaction processor that sits in front of a miner's nodes, validates submissions, and tracks each transaction's lifecycle with callbacks. It introduced the status vocabulary (`RECEIVED`, `SEEN_ON_NETWORK`, `MINED`, and so on), the `X-CallbackUrl` mechanism, and the `{ "rawTx" }` request shape that BSV Broadcaster carries forward.
 
-ARC was designed for SV Node. Arcade is its Teranode-native successor and the BSV Association's supported path going forward. ARC is no longer being developed by the BSV Association, but operators continue to run it.
+ARC was designed for SV Node. BSV Broadcaster is its Teranode-native successor and the BSV Association's supported path going forward. ARC is no longer being developed by the BSV Association, but operators continue to run it.
 
 ### Who still runs ARC
 
@@ -48,11 +48,11 @@ await tx.broadcast(ARC("https://arc.taal.com", ARCConfig(api_key="…")))
 Calling `tx.broadcast()` with no argument in the TypeScript or Python SDK sends the transaction to GorillaPool's ARC. That works today, but it is a dependency on a single third-party service that you did not choose. Pass an explicit broadcaster.
 {% endhint %}
 
-## Migrating from ARC to Arcade
+## Migrating from ARC to BSV Broadcaster
 
-Arcade keeps the parts of ARC's interface that clients depend on, so most migrations are a configuration change.
+BSV Broadcaster keeps the parts of ARC's interface that clients depend on, so most migrations are a configuration change.
 
-| | ARC | Arcade |
+| | ARC | BSV Broadcaster |
 | --- | --- | --- |
 | Submit | `POST /v1/tx` | `POST /tx` |
 | Batch | `POST /v1/txs` (JSON array) | `POST /txs` (concatenated raw bytes) |
@@ -67,10 +67,10 @@ Arcade keeps the parts of ARC's interface that clients depend on, so most migrat
 
 Steps:
 
-1. **Change the URL and drop the `/v1` prefix** on submit and status paths. In the Go SDK that means `ApiUrl` becomes the Arcade root. In the Python SDK switch to the `Arcade` class. In the TypeScript SDK use the `Teranode` class or a custom `Broadcaster`; the `ARC` class hard-codes `/v1/tx`.
+1. **Change the URL and drop the `/v1` prefix** on submit and status paths. In the Go SDK that means `ApiUrl` becomes the BSV Broadcaster root. In the Python SDK switch to the `Arcade` class. In the TypeScript SDK use the `Teranode` class or a custom `Broadcaster`; the `ARC` class hard-codes `/v1/tx`.
 2. **Stop sending BEEF.** If your wallet exchanges BEEF with peers, convert to Extended Format before broadcasting. The SDKs do this when every input has its source transaction attached.
 3. **Replace any `X-WaitFor` polling** with a webhook (`X-CallbackUrl`) or the SSE stream.
 4. **Treat `DOUBLE_SPEND_ATTEMPTED` and HTTP 400 as final** in your retry logic.
 5. **Re-read policy.** Fee floors and size caps differ between operators. Query `GET /policy` on the instance you move to.
 
-See the [Arcade page](arcade.md) for the full API and public endpoints.
+See the [BSV Broadcaster page](bsv-broadcaster.md) for the full API and public endpoints.
