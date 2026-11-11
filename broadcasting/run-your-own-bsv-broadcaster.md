@@ -6,7 +6,7 @@ description: >-
 
 # Run Your Own BSV Broadcaster
 
-BSV Broadcaster is open source under the Open BSV licence and is designed to be run by anyone. A single binary with an embedded key-value store is enough for a working instance; no PostgreSQL, Kafka, or other services are required. Running your own gives you a broadcaster that is entirely under your control, which is the right choice for any production application and a sensible one for serious development.
+BSV Broadcaster is open source under the Apache License 2.0 and is designed to be run by anyone. A single binary with an embedded key-value store is enough for a working instance; no PostgreSQL, Kafka, or other services are required. Running your own gives you a broadcaster that is entirely under your control, which is the right choice for any production application and a sensible one for serious development.
 
 {% embed url="https://github.com/bsv-blockchain/broadcaster" %}
 
