@@ -82,7 +82,7 @@ This should generate an output similar to
 ### Funding
 
 If you wish to use _testnet_ for testing, you will need to obtain unspent coins. A number of faucets are available:
-
+* [https://bsvfaucet.com](https://bsvfaucet.com)
 * [https://scrypt.io/faucet](https://scrypt.io/faucet)
 * [https://testnet.satoshisvision.network](https://testnet.satoshisvision.network)
 * [https://witnessonchain.com/faucet/tbsv](https://witnessonchain.com/faucet/tbsv)
